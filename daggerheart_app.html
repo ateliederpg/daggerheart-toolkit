@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daggerheart Toolkit PT-BR</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f13;--bg2:#1a1a24;--bg3:#22222f;--bg4:#2a2a3a;
+  --border:#333348;--border2:#44446a;
+  --text:#e8e8f0;--text2:#9999bb;--text3:#6666aa;
+  --purple:#7f77dd;--purple2:#534ab7;--purple3:#eeedfe;
+  --green:#1d9e75;--red:#d85a30;--amber:#ba7517;
+  --radius:10px;--radius-sm:6px;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding-bottom:80px}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50}
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;z-index:100;overflow-x:auto}
+.nav-btn{flex:1;min-width:52px;padding:8px 4px 12px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:10px;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .2s;white-space:nowrap}
+.nav-btn svg{width:20px;height:20px}
+.nav-btn.active{color:var(--purple)}
+.page{display:none;padding:16px;max-width:480px;margin:0 auto}
+.page.active{display:block}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.card-title{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+input[type=text],input[type=number],textarea,select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:8px 10px;font-size:14px;outline:none;font-family:inherit}
+input:focus,textarea:focus,select:focus{border-color:var(--purple)}
+textarea{resize:vertical;min-height:70px;line-height:1.5}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+.row-between{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)}
+.row-between:last-child{border-bottom:none}
+.stepper{display:flex;align-items:center;gap:6px}
+.step-btn{width:30px;height:30px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--bg3);color:var(--text);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-btn:hover{background:var(--bg4)}
+.step-val{font-size:17px;font-weight:600;min-width:30px;text-align:center}
+.pips{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.pip{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border2);cursor:pointer;background:var(--bg3)}
+.pip.on-hp{background:var(--green);border-color:var(--green)}
+.pip.on-hope{background:var(--purple);border-color:var(--purple)}
+.pip.on-stress{background:var(--red);border-color:var(--red)}
+.pip.on-armor{background:var(--amber);border-color:var(--amber)}
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--purple2);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--purple3);flex-shrink:0}
+.avatar-wrap{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.btn{width:100%;padding:12px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text);cursor:pointer;font-size:14px;font-weight:600}
+.btn:hover{background:var(--bg4)}
+.btn-primary{background:var(--purple2);border-color:var(--purple);color:#fff}
+.btn-primary:hover{background:var(--purple)}
+.btn-sm{padding:6px 12px;font-size:13px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--bg3);color:var(--text);cursor:pointer}
+.btn-danger{background:#3a0a0a;border-color:var(--red);color:#f07070}
+.mod-grid{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:10px}
+.mod-chip{padding:5px 10px;border-radius:20px;border:1px solid var(--border2);background:var(--bg3);cursor:pointer;font-size:13px;color:var(--text2)}
+.mod-chip.active{background:var(--purple2);border-color:var(--purple);color:#fff;font-weight:600}
+.dice-result{font-size:48px;font-weight:700;text-align:center;color:var(--text);min-height:60px;line-height:1}
+.dice-detail{font-size:13px;color:var(--text2);text-align:center;margin:6px 0;min-height:18px}
+.dice-tag{text-align:center;min-height:26px;margin-bottom:8px}
+.result-box{border-radius:var(--radius);padding:12px;text-align:center;margin-top:10px;display:none}
+.result-box.show{display:block}
+.result-title{font-size:16px;font-weight:700;margin-bottom:4px}
+.result-sub{font-size:13px;opacity:.8}
+.rb-stress{background:#3a1a0a;border:1px solid var(--red)}
+.rb-v1{background:#2a2060;border:1px solid var(--purple)}
+.rb-v2{background:#3a2a0a;border:1px solid var(--amber)}
+.rb-v3{background:#3a0a0a;border:1px solid var(--red)}
+.patamar-grid{display:flex;gap:6px;margin-bottom:10px}
+.pat-btn{flex:1;padding:8px 4px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-size:14px;font-weight:600;text-align:center}
+.pat-btn.active{background:var(--purple2);border-color:var(--purple);color:#fff}
+.exp-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.exp-badge{background:var(--purple2);color:var(--purple3);font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap}
+.coins{display:flex;gap:8px}
+.coin-wrap{flex:1;text-align:center}
+.coin-label{font-size:11px;color:var(--text3);margin-bottom:4px}
+.coin-val{font-size:20px;font-weight:700;color:var(--amber)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat-mini{background:var(--bg3);border-radius:var(--radius-sm);padding:8px;text-align:center}
+.stat-mini-label{font-size:11px;color:var(--text3);margin-bottom:2px}
+.stat-mini-val{font-size:18px;font-weight:700}
+.domain-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:8px}
+.domain-card.active-card{border-color:var(--purple)}
+.card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.card-name{font-size:14px;font-weight:600}
+.badge{font-size:11px;padding:2px 7px;border-radius:10px;background:var(--bg4);color:var(--text2)}
+.card-body{font-size:13px;color:var(--text2);line-height:1.55}
+.toggle-card{width:24px;height:24px;border-radius:50%;border:1px solid var(--border2);background:var(--bg4);cursor:pointer;color:var(--text2);font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.toggle-card.on{background:var(--purple2);border-color:var(--purple);color:#fff}
+.ref-section{margin-bottom:14px}
+.ref-title{font-size:13px;font-weight:700;color:var(--purple);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.ref-item{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:4px}
+.ref-item b{color:var(--text)}
+.check-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;cursor:pointer;user-select:none}
+.check-row input{width:18px;height:18px;accent-color:var(--purple);cursor:pointer}
+
+/* MESTRE */
+.medo-bar{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.medo-pip{width:22px;height:22px;border-radius:4px;border:1.5px solid var(--border2);cursor:pointer;background:var(--bg3)}
+.medo-pip.on{background:var(--red);border-color:var(--red)}
+.section-sep{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin:14px 0 8px}
+
+/* CRIATURA CARD */
+.criatura-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;position:relative}
+.criatura-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.criatura-nome{font-size:16px;font-weight:700}
+.criatura-role{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;text-transform:uppercase}
+.role-standard{background:#1a2a3a;color:#6ab0d4}
+.role-bruiser{background:#3a1a0a;color:#d4836a}
+.role-leader{background:#1a3a1a;color:#6ad46a}
+.role-minion{background:#2a2a2a;color:#aaa}
+.role-solo{background:#3a1a3a;color:#d46ad4}
+.criatura-desc{font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.5}
+.criatura-stats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.criatura-stat{background:var(--bg3);border-radius:var(--radius-sm);padding:5px 8px;font-size:12px;color:var(--text2)}
+.criatura-stat b{color:var(--text);font-size:13px}
+.limiares-visual{display:flex;align-items:center;gap:0;margin-bottom:10px;border-radius:var(--radius-sm);overflow:hidden}
+.limiar-box{flex:1;padding:6px 4px;text-align:center;font-size:11px;font-weight:700}
+.limiar-menor{background:#1a3a2a;color:#5dd4a0}
+.limiar-maior{background:#3a2a0a;color:#d4a05d}
+.limiar-grave{background:#3a0f0f;color:#d45d5d}
+.limiar-label{font-size:9px;opacity:.8;display:block}
+.ataque-row{background:var(--bg3);border-radius:var(--radius-sm);padding:8px;margin-bottom:6px;font-size:13px}
+.ataque-nome{font-weight:600;margin-bottom:2px}
+.ataque-info{color:var(--text2);font-size:12px}
+.feature-item{border-left:2px solid var(--purple);padding:6px 10px;margin-bottom:6px;background:var(--bg3);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:13px;color:var(--text2);line-height:1.5}
+.feature-nome{font-weight:600;color:var(--text);margin-bottom:2px}
+.tracker-inline{display:flex;align-items:center;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.tracker-label-sm{font-size:12px;color:var(--text2);min-width:40px}
+.hp-pips-c{display:flex;gap:4px;flex-wrap:wrap}
+.hp-pip-c{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--border2);cursor:pointer;background:var(--bg3)}
+.hp-pip-c.on-hp{background:var(--green);border-color:var(--green)}
+.hp-pip-c.on-stress{background:var(--red);border-color:var(--red)}
+
+/* FORM CRIATURA */
+.form-group{margin-bottom:10px}
+.form-label{font-size:12px;color:var(--text3);margin-bottom:4px;display:block}
+.role-grid{display:flex;gap:6px;flex-wrap:wrap}
+.role-btn{padding:5px 10px;border-radius:20px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-size:13px}
+.role-btn.active{font-weight:600}
+.role-btn.r-standard.active{background:#1a2a3a;border-color:#6ab0d4;color:#6ab0d4}
+.role-btn.r-bruiser.active{background:#3a1a0a;border-color:#d4836a;color:#d4836a}
+.role-btn.r-leader.active{background:#1a3a1a;border-color:#6ad46a;color:#6ad46a}
+.role-btn.r-minion.active{background:#2a2a2a;border-color:#aaa;color:#aaa}
+.role-btn.r-solo.active{background:#3a1a3a;border-color:#d46ad4;color:#d46ad4}
+.feature-form{background:var(--bg3);border-radius:var(--radius-sm);padding:10px;margin-bottom:8px;border:1px solid var(--border)}
+.remove-btn{background:none;border:none;color:var(--red);cursor:pointer;font-size:18px;padding:2px 6px}
+
+/* TABS internas */
+.inner-tabs{display:flex;gap:4px;margin-bottom:12px}
+.inner-tab{flex:1;padding:7px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg3);cursor:pointer;font-size:12px;text-align:center;color:var(--text2)}
+.inner-tab.active{background:var(--purple2);color:#fff;border-color:var(--purple)}
+.inner-section{display:none}
+.inner-section.active{display:block}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7f77dd" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+  <div>
+    <div style="font-size:15px;font-weight:600">Daggerheart Toolkit PT-BR</div>
+    <div style="font-size:10px;color:var(--text3)">criado por Ateliê de RPG</div>
+  </div>
+</div>
+
+<!-- FICHA -->
+<div class="page active" id="page-ficha">
+  <div class="card">
+    <div class="avatar-wrap">
+      <div class="avatar" id="av">?</div>
+      <div style="flex:1">
+        <input type="text" id="charName" placeholder="Nome do personagem" oninput="updateAv()" style="font-size:17px;font-weight:700;margin-bottom:6px">
+        <input type="text" id="charClasse" placeholder="Classe / Subclasse" style="margin-bottom:6px">
+        <input type="text" id="charHeranca" placeholder="Herança / Comunidade">
+      </div>
+    </div>
+    <div class="card-title">Patamar</div>
+    <div class="patamar-grid" id="patamarGrid"></div>
+    <div class="g2">
+      <div><div class="form-label">Evasão</div><input type="number" id="evasao" value="10" style="text-align:center"></div>
+      <div><div class="form-label">Proficiência</div><input type="number" id="proficiencia" value="1" style="text-align:center"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Atributos</div>
+    <div id="attrs"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Experiências <span style="font-size:11px;color:var(--text3)">(+2 ao usar)</span></div>
+    <div class="exp-row"><span class="exp-badge">+2</span><input type="text" id="exp1" placeholder="Ex: cresci nas ruas, sei negociar"></div>
+    <div class="exp-row"><span class="exp-badge">+2</span><input type="text" id="exp2" placeholder="Ex: ex-soldado, conheço táticas"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Armas Ativas</div>
+    <div class="form-label">Principal</div>
+    <input type="text" id="arma1nome" placeholder="Nome da arma" style="margin-bottom:6px">
+    <div class="g2" style="margin-bottom:6px">
+      <input type="text" id="arma1atrib" placeholder="Atributo / Alcance">
+      <input type="text" id="arma1dano" placeholder="Dados / Tipo">
+    </div>
+    <input type="text" id="arma1hab" placeholder="Habilidade especial" style="margin-bottom:12px">
+    <div class="form-label">Secundária</div>
+    <input type="text" id="arma2nome" placeholder="Nome da arma" style="margin-bottom:6px">
+    <div class="g2" style="margin-bottom:6px">
+      <input type="text" id="arma2atrib" placeholder="Atributo / Alcance">
+      <input type="text" id="arma2dano" placeholder="Dados / Tipo">
+    </div>
+    <input type="text" id="arma2hab" placeholder="Habilidade especial">
+  </div>
+  <div class="card">
+    <div class="card-title">Armadura Ativa</div>
+    <input type="text" id="armaduranome" placeholder="Nome da armadura" style="margin-bottom:6px">
+    <div class="g2" style="margin-bottom:6px">
+      <input type="text" id="armaduralim" placeholder="Limiares base (ex: 5/11)">
+      <input type="number" id="armadurabase" placeholder="Armadura base">
+    </div>
+    <input type="text" id="armadurahab" placeholder="Habilidade da armadura">
+  </div>
+  <div class="card">
+    <div class="card-title">Habilidades de Classe</div>
+    <textarea id="habilidades" placeholder="Cole ou escreva suas habilidades de classe..."></textarea>
+  </div>
+  <div class="card">
+    <div class="card-title">Inventário</div>
+    <textarea id="inventario" placeholder="Itens, equipamentos, armas no inventário..."></textarea>
+  </div>
+  <div class="card">
+    <div class="card-title">Moedas</div>
+    <div class="coins">
+      <div class="coin-wrap"><div class="coin-label">OURO</div>
+        <div class="stepper" style="justify-content:center">
+          <button class="step-btn" onclick="coin('ouro',-1)">−</button>
+          <span class="step-val coin-val" id="ouro">0</span>
+          <button class="step-btn" onclick="coin('ouro',1)">+</button>
+        </div>
+      </div>
+      <div class="coin-wrap"><div class="coin-label">PRATA</div>
+        <div class="stepper" style="justify-content:center">
+          <button class="step-btn" onclick="coin('prata',-1)">−</button>
+          <span class="step-val" id="prata" style="color:#aaa">0</span>
+          <button class="step-btn" onclick="coin('prata',1)">+</button>
+        </div>
+      </div>
+      <div class="coin-wrap"><div class="coin-label">COBRE</div>
+        <div class="stepper" style="justify-content:center">
+          <button class="step-btn" onclick="coin('cobre',-1)">−</button>
+          <span class="step-val" id="cobre" style="color:#c87533">0</span>
+          <button class="step-btn" onclick="coin('cobre',1)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card"><div class="card-title">Notas</div><textarea id="notas" placeholder="Backstory, objetivos, anotações..."></textarea></div>
+</div>
+
+<!-- STATUS -->
+<div class="page" id="page-status">
+  <div class="card">
+    <div class="card-title">Pontos de Vida</div>
+    <div class="row-between"><span>HP Atual</span>
+      <div class="stepper">
+        <button class="step-btn" onclick="chg('hp',-1)">−</button>
+        <span class="step-val" style="color:var(--green)" id="hpVal">6</span>
+        <span style="color:var(--text3)">/</span>
+        <span style="color:var(--text3);font-size:15px" id="hpMaxVal">6</span>
+        <button class="step-btn" onclick="chg('hp',1)">+</button>
+      </div>
+    </div>
+    <div class="row-between"><span style="font-size:13px;color:var(--text2)">HP Máximo</span>
+      <div class="stepper"><button class="step-btn" onclick="chg('hpMax',-1)">−</button><span class="step-val" id="hpMaxEdit">6</span><button class="step-btn" onclick="chg('hpMax',1)">+</button></div>
+    </div>
+    <div class="pips" id="hpPips"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Esperança</div>
+    <div class="row-between"><span>Pontos de Esperança</span>
+      <div class="stepper"><button class="step-btn" onclick="chg('hope',-1)">−</button><span class="step-val" style="color:var(--purple)" id="hopeVal">2</span><button class="step-btn" onclick="chg('hope',1)">+</button></div>
+    </div>
+    <div class="pips" id="hopePips"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Fadiga</div>
+    <div class="row-between"><span>Pontos de Fadiga</span>
+      <div class="stepper"><button class="step-btn" onclick="chg('stress',-1)">−</button><span class="step-val" style="color:var(--red)" id="stressVal">0</span><span style="color:var(--text3)">/</span><span style="color:var(--text3);font-size:15px" id="stressMaxVal">6</span><button class="step-btn" onclick="chg('stress',1)">+</button></div>
+    </div>
+    <div class="row-between"><span style="font-size:13px;color:var(--text2)">PF Máximo</span>
+      <div class="stepper"><button class="step-btn" onclick="chg('stressMax',-1)">−</button><span class="step-val" id="stressMaxEdit">6</span><button class="step-btn" onclick="chg('stressMax',1)">+</button></div>
+    </div>
+    <div class="pips" id="stressPips"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Armadura</div>
+    <div class="row-between"><span>Pontos de Armadura</span>
+      <div class="stepper"><button class="step-btn" onclick="chg('armor',-1)">−</button><span class="step-val" style="color:var(--amber)" id="armorVal">3</span><span style="color:var(--text3)">/</span><span style="color:var(--text3);font-size:15px" id="armorMaxVal">3</span><button class="step-btn" onclick="chg('armor',1)">+</button></div>
+    </div>
+    <div class="row-between"><span style="font-size:13px;color:var(--text2)">PA Máximo</span>
+      <div class="stepper"><button class="step-btn" onclick="chg('armorMax',-1)">−</button><span class="step-val" id="armorMaxEdit">3</span><button class="step-btn" onclick="chg('armorMax',1)">+</button></div>
+    </div>
+    <div class="pips" id="armorPips"></div>
+  </div>
+</div>
+
+<!-- DANO -->
+<div class="page" id="page-dano">
+  <div class="card">
+    <div class="card-title">Limiares de Dano</div>
+    <div class="g2" style="margin-bottom:8px">
+      <div class="stat-mini"><div class="stat-mini-label">Menor</div><div class="stat-mini-val" id="lbl-menor" style="color:var(--green)">4</div></div>
+      <div class="stat-mini"><div class="stat-mini-label">Maior</div><div class="stat-mini-val" id="lbl-maior" style="color:var(--amber)">10</div></div>
+    </div>
+    <div class="stat-mini" style="margin-bottom:8px"><div class="stat-mini-label">Crítico (Grave)</div><div class="stat-mini-val" id="lbl-critico" style="color:var(--red)">16</div></div>
+    <div class="row-between"><span>Menor</span><div class="stepper"><button class="step-btn" onclick="chgL('menor',-1)">−</button><span class="step-val" id="l-menor">4</span><button class="step-btn" onclick="chgL('menor',1)">+</button></div></div>
+    <div class="row-between"><span>Maior</span><div class="stepper"><button class="step-btn" onclick="chgL('maior',-1)">−</button><span class="step-val" id="l-maior">10</span><button class="step-btn" onclick="chgL('maior',1)">+</button></div></div>
+    <div class="row-between"><span>Crítico</span><div class="stepper"><button class="step-btn" onclick="chgL('critico',-1)">−</button><span class="step-val" id="l-critico">16</span><button class="step-btn" onclick="chgL('critico',1)">+</button></div></div>
+    <div class="row-between"><span>Valor Armadura</span><div class="stepper"><button class="step-btn" onclick="chgL('armorVal',-1)">−</button><span class="step-val" id="l-armorVal">3</span><button class="step-btn" onclick="chgL('armorVal',1)">+</button></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Calcular Dano</div>
+    <input type="number" id="danoInput" placeholder="Dano recebido" style="font-size:22px;text-align:center;margin-bottom:10px" min="0">
+    <label class="check-row" onclick="toggleAU()"><input type="checkbox" id="usarArmadura"><span>Usar armadura? (−<span id="armorLbl">3</span>)</span></label>
+    <button class="btn btn-primary" onclick="calcDano()">⚔️ Calcular resultado</button>
+    <div class="result-box" id="resultBox"><div class="result-title" id="resultTitle"></div><div class="result-sub" id="resultSub"></div></div>
+  </div>
+</div>
+
+<!-- DADOS -->
+<div class="page" id="page-dados">
+  <div class="card">
+    <div class="card-title">Atributo Base</div>
+    <div class="mod-grid" id="attrBtns"></div>
+    <div class="card-title">Modificador Extra</div>
+    <div class="mod-grid" id="modBtns"></div>
+  </div>
+  <div class="card">
+    <div class="dice-detail" id="diceDetail">Selecione um atributo e role</div>
+    <div class="dice-result" id="diceResult">—</div>
+    <div class="dice-tag" id="diceTag"></div>
+    <button class="btn btn-primary" style="margin-top:8px" onclick="rolar()">🎲 Rolar 2d12</button>
+    <div style="height:8px"></div>
+    <button class="btn" onclick="rolarSO()">Rolar Dado de Esperança (d12)</button>
+  </div>
+</div>
+
+<!-- CARTAS -->
+<div class="page" id="page-cartas">
+  <div class="card">
+    <div class="card-title">Mão atual <span id="cartaCount" style="color:var(--purple)">0/5</span></div>
+    <input type="text" id="cartaSearch" placeholder="Buscar carta..." oninput="filtrarCartas()">
+  </div>
+  <div id="cartasList"></div>
+</div>
+
+<!-- MESTRE -->
+<div class="page" id="page-mestre">
+  <div class="inner-tabs">
+    <div class="inner-tab active" onclick="showInner('sessao',this)">🎲 Sessão</div>
+    <div class="inner-tab" onclick="showInner('criaturas',this)">🐉 Criaturas</div>
+    <div class="inner-tab" onclick="showInner('criar',this)">➕ Criar</div>
+  </div>
+
+  <!-- SESSÃO -->
+  <div class="inner-section active" id="inner-sessao">
+    <div class="card">
+      <div class="card-title">☠️ Pontos de Medo</div>
+      <div class="row-between">
+        <span>Medo acumulado</span>
+        <div class="stepper">
+          <button class="step-btn" onclick="chgMedo(-1)">−</button>
+          <span class="step-val" style="color:var(--red)" id="medoVal">0</span>
+          <button class="step-btn" onclick="chgMedo(1)">+</button>
+        </div>
+      </div>
+      <div class="medo-bar" id="medoBar"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚖️ Calculadora de Encontro</div>
+      <div class="row-between">
+        <span style="font-size:14px">Nº de Jogadores</span>
+        <div class="stepper">
+          <button class="step-btn" onclick="chgJog(-1)">−</button>
+          <span class="step-val" id="jogVal">4</span>
+          <button class="step-btn" onclick="chgJog(1)">+</button>
+        </div>
+      </div>
+      <div class="row-between">
+        <span style="font-size:14px">Ajuste de dificuldade</span>
+        <div class="stepper">
+          <button class="step-btn" onclick="chgAjuste(-1)">−</button>
+          <span class="step-val" id="ajusteVal">0</span>
+          <button class="step-btn" onclick="chgAjuste(1)">+</button>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin:4px 0 8px">−1 = luta fácil | +2 = luta perigosa</div>
+      <div style="background:var(--bg3);border-radius:var(--radius-sm);padding:10px;margin-bottom:8px">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:4px">Orçamento total</div>
+        <div style="font-size:26px;font-weight:700;color:var(--purple)" id="bpTotal">14</div>
+        <div style="font-size:12px;color:var(--text2)" id="bpFormula">(3×4)+2 = 14 BP</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:var(--radius-sm);padding:10px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:12px;color:var(--text3)">BP gasto</span>
+          <span style="font-size:12px;color:var(--text3)">BP restante</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:22px;font-weight:700;color:var(--red)" id="bpGasto">0</span>
+          <span style="font-size:22px;font-weight:700;color:var(--green)" id="bpRestante">14</span>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);line-height:1.8">
+        <b style="color:var(--text2)">Custo por tipo (PB):</b><br>
+        1 PB → Lacaio (grupo) | Manipulador | Assistente<br>
+        2 PB → Comum | Atirador | Oportunista | Horda<br>
+        3 PB → Líder<br>
+        4 PB → Brutamonte<br>
+        5 PB → Solo
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:6px;line-height:1.8">
+        <b style="color:var(--text2)">Ajustes:</b><br>
+        −1 PB → luta mais fácil/curta<br>
+        −2 PB → 2+ adversários Solo<br>
+        −2 PB → +1d4 dano em todos adversários<br>
+        +1 PB → adversário de patamar inferior<br>
+        +1 PB → sem Brutamonte, Horda, Líder ou Solo<br>
+        +2 PB → luta mais perigosa/longa
+      </div>
+      <div style="font-size:12px;color:var(--amber);margin-top:8px;min-height:18px" id="bpAviso"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚡ Adversários em Combate</div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:10px">Adversários adicionados à sessão aparecem aqui.</p>
+      <div id="combatList"></div>
+      <button class="btn" onclick="showInner('criaturas',document.querySelectorAll('.inner-tab')[1])">Ver biblioteca de adversários</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📋 Notas da Sessão</div>
+      <textarea id="notasSessao" placeholder="Anotações, cenas, NPCs presentes, objetivos da sessão..."></textarea>
+    </div>
+  </div>
+
+  <!-- CRIATURAS -->
+  <div class="inner-section" id="inner-criaturas">
+    <div class="card" style="margin-bottom:8px">
+      <input type="text" id="criaturaSearch" placeholder="Buscar criatura..." oninput="filtrarCriaturas()">
+    </div>
+    <div id="criaturasList"></div>
+  </div>
+
+  <!-- CRIAR -->
+  <div class="inner-section" id="inner-criar">
+    <div class="card">
+      <div class="card-title">Nova Criatura / NPC</div>
+
+      <div class="form-group">
+        <label class="form-label">Nome</label>
+        <input type="text" id="c_nome" placeholder="Ex: Pirata Capitão">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Tipo de Adversário</label>
+        <div class="role-grid" id="roleGrid">
+          <button class="role-btn r-standard active" onclick="selRole('Comum',this)">Comum</button>
+          <button class="role-btn r-bruiser" onclick="selRole('Brutamonte',this)">Brutamonte</button>
+          <button class="role-btn r-leader" onclick="selRole('Líder',this)">Líder</button>
+          <button class="role-btn r-minion" onclick="selRole('Lacaio',this)">Lacaio</button>
+          <button class="role-btn r-solo" onclick="selRole('Solo',this)">Solo</button>
+          <button class="role-btn r-minion" onclick="selRole('Horda',this)">Horda</button>
+          <button class="role-btn r-standard" onclick="selRole('Atirador',this)">Atirador</button>
+          <button class="role-btn r-minion" onclick="selRole('Oportunista',this)">Oportunista</button>
+          <button class="role-btn r-leader" onclick="selRole('Assistente',this)">Assistente</button>
+          <button class="role-btn r-standard" onclick="selRole('Manipulador',this)">Manipulador</button>
+        </div>
+      </div>
+
+      <div class="g2" style="margin-bottom:10px">
+        <div>
+          <label class="form-label">Dificuldade</label>
+          <input type="number" id="c_dif" value="10">
+        </div>
+        <div>
+          <label class="form-label">Patamar</label>
+          <div style="display:flex;gap:4px">
+            <button class="pat-btn active" id="cp1" onclick="selCPat(1)">1</button>
+            <button class="pat-btn" id="cp2" onclick="selCPat(2)">2</button>
+            <button class="pat-btn" id="cp3" onclick="selCPat(3)">3</button>
+            <button class="pat-btn" id="cp4" onclick="selCPat(4)">4</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Bioma / Ambiente</label>
+        <input type="text" id="c_bioma" placeholder="Ex: Floresta, Oceano, Dungeon, Cidade...">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Descrição curta</label>
+        <textarea id="c_desc" placeholder="Uma linha descrevendo a criatura..." style="min-height:50px"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Motivações / Táticas</label>
+        <input type="text" id="c_taticas" placeholder="Ex: aterrorizar, saquear, proteger o líder">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Experiências</label>
+        <input type="text" id="c_exp" placeholder="Ex: navegar, intimidar, lutar com espada">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚔️ Ataque Principal</div>
+      <div class="form-group">
+        <label class="form-label">Nome do ataque</label>
+        <input type="text" id="c_atkNome" placeholder="Ex: Garras, Espada Enferrujada">
+      </div>
+      <div class="g2">
+        <div>
+          <label class="form-label">Alcance</label>
+          <select id="c_atkAlcance">
+            <option>Corpo a corpo</option>
+            <option>Muito próximo</option>
+            <option>Próximo</option>
+            <option>Distante</option>
+            <option>Muito distante</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Dano</label>
+          <input type="text" id="c_atkDano" placeholder="Ex: 2d6+3">
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <label class="form-label">Modificador de ataque</label>
+        <input type="number" id="c_atkMod" value="0">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💔 Limiares e Vida</div>
+      <div class="g2" style="margin-bottom:8px">
+        <div><label class="form-label">Limiar Maior (2 PV)</label><input type="number" id="c_limMaior" value="5"></div>
+        <div><label class="form-label">Limiar Grave (3 PV)</label><input type="number" id="c_limGrave" value="10"></div>
+      </div>
+      <div class="g2">
+        <div><label class="form-label">Pontos de Vida (HP)</label><input type="number" id="c_hp" value="5"></div>
+        <div><label class="form-label">Fadiga</label><input type="number" id="c_stress" value="2"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">✨ Habilidades / Features</div>
+      <div id="featuresForm"></div>
+      <button class="btn" onclick="addFeatureForm()">+ Adicionar habilidade</button>
+    </div>
+
+    <button class="btn btn-primary" style="margin-bottom:12px" onclick="salvarCriatura()">💾 Salvar Criatura</button>
+  </div>
+</div>
+
+<!-- REFERENCIA -->
+<div class="page" id="page-ref">
+  <div class="card">
+    <div class="ref-section">
+      <div class="ref-title">Rolagem de Dados</div>
+      <div class="ref-item">Role <b>2d12</b> + atributo. O dado maior é o <b>Dado de Esperança</b>, o menor é o <b>Dado de Medo</b>.</div>
+      <div class="ref-item"><b>Com Esperança:</b> d Esperança > d Medo → recebe 1 Esperança.</div>
+      <div class="ref-item"><b>Com Medo:</b> d Medo > d Esperança → mestre recebe 1 Medo.</div>
+      <div class="ref-item"><b>Crítico:</b> ambos os dados tiram 12.</div>
+    </div>
+    <div class="ref-section">
+      <div class="ref-title">Sistema de Dano</div>
+      <div class="ref-item">Dano <b>abaixo do Menor</b> → 1 Fadiga.</div>
+      <div class="ref-item">Dano <b>≥ Menor</b> → perde 1 PV.</div>
+      <div class="ref-item">Dano <b>≥ Maior</b> → perde 2 PV.</div>
+      <div class="ref-item">Dano <b>≥ Crítico/Grave</b> → perde 3 PV.</div>
+      <div class="ref-item"><b>Armadura:</b> marcar 1 PA reduz a gravidade em um limiar.</div>
+    </div>
+    <div class="ref-section">
+      <div class="ref-title">Esperança e Medo</div>
+      <div class="ref-item"><b>Gastar Esperança:</b> +1 num teste, ativar habilidades, ajudar aliados.</div>
+      <div class="ref-item"><b>Medo do Mestre:</b> ativa habilidades de adversários e complicações.</div>
+    </div>
+    <div class="ref-section">
+      <div class="ref-title">Condições</div>
+      <div class="ref-item"><b>Vulnerável:</b> ataques contra você têm vantagem.</div>
+      <div class="ref-item"><b>Imobilizado:</b> não pode se mover.</div>
+      <div class="ref-item"><b>Oculto/Escondido:</b> ataques contra você têm desvantagem.</div>
+      <div class="ref-item"><b>Atordoado:</b> não pode agir nem usar reações.</div>
+      <div class="ref-item"><b>Enfeitiçado:</b> atenção fixada no conjurador.</div>
+      <div class="ref-item"><b>Horrorizado:</b> fica Vulnerável enquanto durar.</div>
+    </div>
+    <div class="ref-section">
+      <div class="ref-title">Descanso</div>
+      <div class="ref-item"><b>Curto:</b> 1 movimento de repouso (recuperar PF, PV, armadura, tratar ferimentos).</div>
+      <div class="ref-item"><b>Longo:</b> recupera tudo. 2 movimentos de repouso. Reseta habilidades diárias.</div>
+    </div>
+    <div class="ref-section">
+      <div class="ref-title">Roles de Adversários</div>
+      <div class="ref-item"><b>Standard:</b> adversário comum equilibrado.</div>
+      <div class="ref-item"><b>Bruiser:</b> mais HP/dano, menos mobilidade.</div>
+      <div class="ref-item"><b>Leader:</b> buffa aliados, mais habilidades.</div>
+      <div class="ref-item"><b>Minion:</b> fraco mas em grupo.</div>
+      <div class="ref-item"><b>Solo:</b> chefe poderoso, enfrenta o grupo sozinho.</div>
+    </div>
+  </div>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="goTo('ficha',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg>Ficha
+  </button>
+  <button class="nav-btn" onclick="goTo('status',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Status
+  </button>
+  <button class="nav-btn" onclick="goTo('dano',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Dano
+  </button>
+  <button class="nav-btn" onclick="goTo('dados',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="16" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="16" r="1.5" fill="currentColor"/><circle cx="16" cy="16" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>Dados
+  </button>
+  <button class="nav-btn" onclick="goTo('cartas',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="14" height="18" rx="2"/><path d="M8 2h12a2 2 0 0 1 2 2v14"/></svg>Cartas
+  </button>
+  <button class="nav-btn" onclick="goTo('mestre',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>Mestre
+  </button>
+  <button class="nav-btn" onclick="goTo('ref',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Regras
+  </button>
+</nav>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────────
+const S={
+  attrs:{Agilidade:1,Força:0,Acuidade:1,Presença:0,Conhecimento:-1,Instinto:1},
+  hp:6,hpMax:6,hope:2,hopeMax:6,stress:0,stressMax:6,armor:3,armorMax:3,
+  limiares:{menor:4,maior:10,critico:16,armorVal:3},
+  patamar:1,coins:{ouro:0,prata:0,cobre:0},
+  selMod:0,selAttr:null,
+  cartasMao:new Set(),
+  medo:0,medoMax:15,
+  criaturas:[],
+  combate:[],
+  cPatamar:1,cRole:'Standard'
+};
+const ATTRS=['Agilidade','Força','Acuidade','Presença','Conhecimento','Instinto'];
+const fmt=v=>(v>=0?'+':'')+v;
+
+function goTo(pg,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+pg).classList.add('active');
+  btn.classList.add('active');
+}
+
+function showInner(id,btn){
+  document.querySelectorAll('.inner-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.inner-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('inner-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function updateAv(){
+  const n=document.getElementById('charName').value.trim();
+  document.getElementById('av').textContent=n?n[0].toUpperCase():'?';
+}
+
+// PATAMAR
+function renderPatamar(){
+  document.getElementById('patamarGrid').innerHTML=[1,2,3,4].map(p=>
+    `<button class="pat-btn${S.patamar===p?' active':''}" onclick="setPatamar(${p})">P${p}</button>`).join('');
+}
+function setPatamar(p){S.patamar=p;renderPatamar()}
+
+// ATTRS
+function renderAttrs(){
+  document.getElementById('attrs').innerHTML=ATTRS.map(a=>`
+    <div class="row-between">
+      <span style="font-size:14px">${a}</span>
+      <div class="stepper">
+        <button class="step-btn" onclick="chgA('${a}',-1)">−</button>
+        <span class="step-val" id="a-${a}">${fmt(S.attrs[a])}</span>
+        <button class="step-btn" onclick="chgA('${a}',1)">+</button>
+      </div>
+    </div>`).join('');
+}
+function chgA(a,d){
+  S.attrs[a]=Math.max(-3,Math.min(4,S.attrs[a]+d));
+  document.getElementById('a-'+a).textContent=fmt(S.attrs[a]);
+  renderAttrBtns();
+}
+
+// STATUS
+function chg(k,d){
+  if(k==='hpMax'){S.hpMax=Math.max(1,S.hpMax+d);S.hp=Math.min(S.hp,S.hpMax);}
+  else if(k==='hp'){S.hp=Math.max(0,Math.min(S.hpMax,S.hp+d));}
+  else if(k==='hope'){S.hope=Math.max(0,Math.min(S.hopeMax,S.hope+d));}
+  else if(k==='stress'){S.stress=Math.max(0,Math.min(S.stressMax,S.stress+d));}
+  else if(k==='stressMax'){S.stressMax=Math.max(1,S.stressMax+d);S.stress=Math.min(S.stress,S.stressMax);}
+  else if(k==='armor'){S.armor=Math.max(0,Math.min(S.armorMax,S.armor+d));}
+  else if(k==='armorMax'){S.armorMax=Math.max(0,S.armorMax+d);S.armor=Math.min(S.armor,S.armorMax);}
+  refreshStatus();
+}
+function refreshStatus(){
+  const s=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  s('hpVal',S.hp);s('hpMaxVal',S.hpMax);s('hpMaxEdit',S.hpMax);
+  s('hopeVal',S.hope);
+  s('stressVal',S.stress);s('stressMaxVal',S.stressMax);s('stressMaxEdit',S.stressMax);
+  s('armorVal',S.armor);s('armorMaxVal',S.armorMax);s('armorMaxEdit',S.armorMax);
+  pip('hpPips',S.hp,S.hpMax,'hp');
+  pip('hopePips',S.hope,S.hopeMax,'hope');
+  pip('stressPips',S.stress,S.stressMax,'stress');
+  pip('armorPips',S.armor,S.armorMax,'armor');
+}
+function pip(id,cur,max,cls){
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML=Array.from({length:max},(_,i)=>
+    `<div class="pip${i<cur?' on-'+cls:''}" onclick="setPip('${cls}',${i+1})"></div>`).join('');
+}
+function setPip(cls,v){
+  if(cls==='hp'){S.hp=S.hp===v?v-1:v}
+  else if(cls==='hope'){S.hope=S.hope===v?v-1:v}
+  else if(cls==='stress'){S.stress=S.stress===v?v-1:v}
+  else if(cls==='armor'){S.armor=S.armor===v?v-1:v}
+  refreshStatus();
+}
+
+// LIMIARES
+function chgL(k,d){
+  S.limiares[k]=Math.max(1,S.limiares[k]+d);
+  document.getElementById('l-'+k).textContent=S.limiares[k];
+  const lbl=document.getElementById('lbl-'+k);if(lbl)lbl.textContent=S.limiares[k];
+  const al=document.getElementById('armorLbl');if(al)al.textContent=S.limiares.armorVal;
+}
+function toggleAU(){const cb=document.getElementById('usarArmadura');cb.checked=!cb.checked}
+function calcDano(){
+  const raw=parseInt(document.getElementById('danoInput').value)||0;
+  const usa=document.getElementById('usarArmadura').checked;
+  const final=usa?Math.max(0,raw-S.limiares.armorVal):raw;
+  const{menor,maior,critico}=S.limiares;
+  const box=document.getElementById('resultBox');
+  box.className='result-box show';
+  const det=usa?`${raw} − ${S.limiares.armorVal} = ${final}`:`Dano: ${final}`;
+  if(final<menor){box.classList.add('rb-stress');document.getElementById('resultTitle').textContent='💢 Marca 1 de Fadiga';document.getElementById('resultSub').textContent=`${det} — abaixo do menor (${menor})`;}
+  else if(final<maior){box.classList.add('rb-v1');document.getElementById('resultTitle').textContent='❤️ Perde 1 Ponto de Vida';document.getElementById('resultSub').textContent=`${det} — entre ${menor} e ${maior-1}`;}
+  else if(final<critico){box.classList.add('rb-v2');document.getElementById('resultTitle').textContent='💛 Perde 2 Pontos de Vida';document.getElementById('resultSub').textContent=`${det} — entre ${maior} e ${critico-1}`;}
+  else{box.classList.add('rb-v3');document.getElementById('resultTitle').textContent='💔 Perde 3 Pontos de Vida';document.getElementById('resultSub').textContent=`${det} — ${critico} ou mais`;}
+}
+
+// COINS
+function coin(k,d){S.coins[k]=Math.max(0,S.coins[k]+d);document.getElementById(k).textContent=S.coins[k]}
+
+// DADOS
+function renderModBtns(){
+  document.getElementById('modBtns').innerHTML=[-3,-2,-1,0,1,2,3,4].map(m=>
+    `<button class="mod-chip${S.selMod===m?' active':''}" onclick="selMod(${m})">${fmt(m)}</button>`).join('');
+}
+function selMod(m){S.selMod=m;renderModBtns()}
+function renderAttrBtns(){
+  document.getElementById('attrBtns').innerHTML=ATTRS.map(a=>
+    `<button class="mod-chip${S.selAttr===a?' active':''}" onclick="selAttr('${a}')">${a.slice(0,3)} ${fmt(S.attrs[a])}</button>`).join('');
+}
+function selAttr(a){S.selAttr=a;renderAttrBtns()}
+function rolar(){
+  const d1=Math.ceil(Math.random()*12),d2=Math.ceil(Math.random()*12);
+  const base=S.selAttr?S.attrs[S.selAttr]:0;
+  const total=d1+d2+base+S.selMod;
+  document.getElementById('diceResult').textContent=total;
+  let det=`🎲 ${d1} + ${d2}`;
+  if(S.selAttr)det+=` | ${S.selAttr}: ${fmt(base)}`;
+  if(S.selMod!==0)det+=` | Mod: ${fmt(S.selMod)}`;
+  document.getElementById('diceDetail').textContent=det;
+  let tag='';
+  if(d1===12&&d2===12)tag=`<span style="background:#0a2a1a;color:#5dd4a0;display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600">✨ Crítico!</span>`;
+  else if(d1>d2)tag=`<span style="background:#2a2560;color:#b8b2f5;display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600">⭐ Com Esperança</span>`;
+  else if(d2>d1)tag=`<span style="background:#3a1a0a;color:#f5956a;display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600">🌑 Com Medo</span>`;
+  else tag=`<span style="background:var(--bg4);color:var(--text2);display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px">Empate</span>`;
+  document.getElementById('diceTag').innerHTML=tag;
+}
+function rolarSO(){
+  const d=Math.ceil(Math.random()*12);
+  document.getElementById('diceResult').textContent=d;
+  document.getElementById('diceDetail').textContent='Dado de Esperança (d12)';
+  document.getElementById('diceTag').innerHTML='';
+}
+
+// CARTAS
+const CARTAS=[
+  {nome:'Trovador — Artista Talentoso',tipo:'Classe',nivel:1,dominio:'Fundamental',texto:'Atributo: Presença. Canção Comovente: 1 Esperança p/ aliados próximos. Canção Épica: alvo próximo Vulnerável. Canção Relaxante: recupera 1 PV p/ você e aliados próximos. Cada canção 1x/descanso longo.'},
+  {nome:'Beletrista — Discurso Inspirador',tipo:'Classe',nivel:1,dominio:'Fundamental',texto:'Atributo: Presença. 1x/descanso longo: todos aliados até distante recuperam 2 PF. Alma de Poeta: gaste 1 Esperança para +1d4 em testes de impressionar/persuadir/ofender.'},
+  {nome:'Baluarte — Resoluto',tipo:'Classe',nivel:1,dominio:'Fundamental',texto:'+1 permanente em limiares de dano. Vontade de Ferro: ao sofrer dano físico, marque 1 PA adicional para reduzir a gravidade.'},
+  {nome:'Gatuno — Passo Sombrio',tipo:'Classe',nivel:1,dominio:'Fundamental',texto:'Atributo: Acuidade. Ao entrar em sombra, marque 1 PF para teleportar para outra sombra distante. Você fica Oculto.'},
+  {nome:'Mafioso — Conexões',tipo:'Classe',nivel:1,dominio:'Fundamental',texto:'Atributo: Acuidade. Ao chegar em lugar importante, você conhece alguém. Escolha um fato sobre essa conexão.'},
+  {nome:'Portador Divino — Arma Espiritual',tipo:'Classe',nivel:1,dominio:'Fundamental',texto:'Atributo: Força. Arma voa para atacar alvo próximo e retorna. Marque 1 PF para alvo adicional. Toque Piedoso: 1x/descanso longo, toque criatura → recupera 2 PV ou 2 PF.'},
+  {nome:'Elementalista — Controle Elemental',tipo:'Classe',nivel:1,dominio:'Fundamental',texto:'Atributo: Instinto. Escolha elemento. Gaste 1 Esperança ao descrever como ajuda: +2 no teste ou +3 no dano.'},
+  {nome:'Rastreador — Predador Implacável',tipo:'Classe',nivel:1,dominio:'Fundamental',texto:'Atributo: Agilidade. Marque 1 PF para +1 Proficiência no dano. Ao causar dano grave, adversário marca 1 PF.'},
+  {nome:'Escolhido da Bravura — Coragem',tipo:'Classe',nivel:1,dominio:'Fundamental',texto:'Ao falhar com Medo, receba 1 Esperança. Ritual de Batalha: 1x/descanso longo, recupere 2 PF e receba 2 Esperança.'},
+  {nome:'Discípulo do Conhecimento — Promissor',tipo:'Classe',nivel:1,dominio:'Fundamental',texto:'Atributo: Conhecimento. Pegue carta de domínio adicional. Adepto: marque 1 PF em vez de gastar Esperança ao usar Experiência e dobre o modificador.'},
+  {nome:'Guardião — Determinação',tipo:'Classe',nivel:1,dominio:'Fundamental',texto:'1x/descanso longo: fique Determinado (dado d4→d6 no nível 5). Enquanto Determinado: reduz gravidade do dano físico em 1 categoria, soma o dado de Determinação ao dano, não pode ser Imobilizado ou Vulnerável.'},
+  {nome:'Guerreiro — Treinamento de Combate',tipo:'Classe',nivel:1,dominio:'Fundamental',texto:'Ignora tipo de empunhadura. Ao causar dano físico, recebe bônus = nível na rolagem de dano. Ataque de Oportunidade: ao adversário tentar fugir do CaC, teste de reação para interceptar.'},
+  {nome:'Ladino — Ataque Furtivo',tipo:'Classe',nivel:1,dominio:'Fundamental',texto:'Ao acertar Oculto ou com aliado CaC ao alvo: some Xd6 ao dano (X = patamar). Oculto: permanece sem ser visto mesmo que adversário se aproxime, desde que fique parado.'},
+  {nome:'Mago — Padrões Estranhos',tipo:'Classe',nivel:1,dominio:'Fundamental',texto:'Atributo: Conhecimento. Escolha número 1-12: ao rolar nos dados, receba 1 Esperança ou recupere 1 PF. Prestidigitação: efeitos mágicos sutis à vontade.'},
+  {nome:'Patrulheiro — Marca da Presa',tipo:'Classe',nivel:1,dominio:'Fundamental',texto:'Atributo: Agilidade. Gaste 1 Esperança e ataque. Se acertar: Marca o alvo. Contra alvo Marcado: sabe direção, ao causar dano ele marca 1 PF, ao errar pode cancelar Marca para rerolar.'},
+  {nome:'Serafim — Dados de Oração',tipo:'Classe',nivel:1,dominio:'Fundamental',texto:'No início de cada sessão, role Xd4 (X = atributo de conjuração). Gaste dados para reduzir dano sofrido, somar a rolagem após o teste, ou receber Esperança igual ao resultado.'},
+  {nome:'Levante-se',tipo:'Talento',nivel:1,dominio:'Lâmina/Falange',texto:'Ao sofrer dano grave, marque 1 PF para reduzir a gravidade em um limiar.'},
+  {nome:'Não o Suficiente',tipo:'Talento',nivel:1,dominio:'Lâmina',texto:'Ao rolar dados de dano, role novamente quaisquer resultados 1 ou 2.'},
+  {nome:'Turbilhão',tipo:'Talento',nivel:1,dominio:'Lâmina',texto:'Ao acertar alvo muito próximo, gaste 1 Esperança para usar o mesmo ataque contra todos muito próximos (metade do dano para extras).'},
+  {nome:'Intocável',tipo:'Talento',nivel:1,dominio:'Falange',texto:'Bônus na Evasão igual à metade da sua Agilidade.'},
+  {nome:'Ataque Imprudente',tipo:'Talento',nivel:2,dominio:'Lâmina',texto:'Marque 1 PF para vantagem em um teste de ataque.'},
+  {nome:'Armadura Fortificada',tipo:'Talento',nivel:4,dominio:'Valor',texto:'+2 nos limiares de dano enquanto usar armadura.'},
+  {nome:'Fúria',tipo:'Talento',nivel:6,dominio:'Lâmina',texto:'Antes de atacar, marque 1 PF para bônus = dobro da Força no dano. Pode ativar 2x por ataque.'},
+  {nome:'Acuidade Cruel',tipo:'Talento',nivel:7,dominio:'Meia-noite',texto:'Ao acertar com arma, receba bônus igual à sua Acuidade ou Agilidade no dano.'},
+  {nome:'Dissimulação',tipo:'Talento',nivel:1,dominio:'Graça',texto:'Gaste 1 Esperança para vantagem em teste para enganar ou fazer alguém acreditar em mentira.'},
+  {nome:'Voz da Natureza',tipo:'Talento',nivel:1,dominio:'Sabedoria',texto:'Fale com plantas e animais (Instinto 12). Em sucesso, fornecem informações. Antes de teste de conjuração em ambiente natural: gaste 1 Esperança para +2.'},
+  {nome:'Armadura Corporal',tipo:'Talento',nivel:1,dominio:'Valor',texto:'Sem armadura: Armadura base = 3 + Força. Limiares: P1 9/19 | P2 11/24 | P3 13/31 | P4 15/38.'},
+  {nome:'Proteção Rúnica',tipo:'Feitiço',nivel:1,dominio:'Arcano',texto:'Talismã pessoal. Portador gasta 1 Esperança para reduzir dano em 1d8. Se tirar 8: poder encerra. Recarrega no próximo descanso.'},
+  {nome:'Incendiar',tipo:'Feitiço',nivel:2,dominio:'Arcano',texto:'Teste de conjuração (CaC). Sucesso: alvo em chamas → 1d20+3 dano mágico + condição Em Chamas (2d6 dano ao agir).'},
+  {nome:'Contramágica',tipo:'Feitiço',nivel:3,dominio:'Arcano',texto:'Interrompa efeito mágico com teste de conjuração de reação. Sucesso: efeito termina, carta vai para reserva.'},
+  {nome:'Enfeitiçar',tipo:'Feitiço',nivel:1,dominio:'Graça',texto:'Teste de conjuração (próximo). Sucesso: alvo Enfeitiçado. 1x/descanso: marque 1 PF para forçá-lo a marcar 1 PF.'},
+  {nome:'Raio Luminoso',tipo:'Feitiço',nivel:1,dominio:'Esplendor',texto:'Teste de conjuração (distante). Sucesso: gaste 1 Esperança, cause d8+2 dano mágico. Alvo fica Vulnerável.'},
+  {nome:'Toque Reparador',tipo:'Feitiço',nivel:1,dominio:'Esplendor',texto:'Gaste 2 Esperança: recupera 1 PV ou PF do alvo. 1x/descanso longo com conexão: recupera 2.'},
+  {nome:'Mãos Curativas',tipo:'Feitiço',nivel:2,dominio:'Esplendor',texto:'Teste (13, CaC). Sucesso: marque 1 PF → recupera 2 PV/PF. Falha: marque 1 PF → recupera 1. Não cura mesmo alvo até próximo descanso longo.'},
+  {nome:'Vinha Voraz',tipo:'Feitiço',nivel:1,dominio:'Sabedoria',texto:'Teste (distante). Sucesso: 1d8+1 dano físico + Imobiliza alvo. Gaste 1 Esperança para também Imobilizar alvo muito próximo ao primeiro.'},
+  {nome:'Campo Curativo',tipo:'Feitiço',nivel:4,dominio:'Sabedoria',texto:'1x/descanso longo: campo de plantas. Você e aliados próximos recuperam 1 PV. Gaste 2 Esperança para curar 2 PV.'},
+  {nome:'Ressurreição',tipo:'Feitiço',nivel:10,dominio:'Esplendor',texto:'Teste (20). Sucesso: morto há até 100 anos volta à vida completa. Role 1d6: 5 ou menos → carta vai para reserva permanentemente.'},
+];
+let cartasFiltradas=[...CARTAS];
+function filtrarCartas(){
+  const q=document.getElementById('cartaSearch').value.toLowerCase();
+  cartasFiltradas=CARTAS.filter(c=>c.nome.toLowerCase().includes(q)||c.tipo.toLowerCase().includes(q)||c.dominio.toLowerCase().includes(q));
+  renderCartas();
+}
+function renderCartas(){
+  document.getElementById('cartaCount').textContent=`${S.cartasMao.size}/5`;
+  document.getElementById('cartasList').innerHTML=cartasFiltradas.map((c)=>{
+    const idx=CARTAS.indexOf(c);const on=S.cartasMao.has(idx);
+    return`<div class="domain-card${on?' active-card':''}">
+      <div class="card-header">
+        <div><div class="card-name">${c.nome}</div>
+          <div style="display:flex;gap:4px;margin-top:4px"><span class="badge">${c.tipo}</span><span class="badge">${c.dominio}</span><span class="badge">Nv ${c.nivel}</span></div>
+        </div>
+        <button class="toggle-card${on?' on':''}" onclick="toggleCarta(${idx})">${on?'✦':'+'}</button>
+      </div>
+      <div class="card-body">${c.texto}</div>
+    </div>`;
+  }).join('');
+}
+function toggleCarta(idx){
+  if(S.cartasMao.has(idx)){S.cartasMao.delete(idx);}
+  else if(S.cartasMao.size<5){S.cartasMao.add(idx);}
+  renderCartas();
+}
+
+// CALCULADORA DE ENCONTRO
+const BP_CUSTO={'Lacaio':1,'Horda':2,'Comum':2,'Atirador':2,'Oportunista':2,'Manipulador':1,'Assistente':1,'Líder':3,'Brutamonte':4,'Solo':5};
+let S_jog=4,S_ajuste=0;
+function calcBP(){
+  const s=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  const base=(3*S_jog)+2+S_ajuste;
+  const gasto=S.combate.reduce((acc,c)=>acc+(BP_CUSTO[c.role]||2),0);
+  const restante=base-gasto;
+  s('jogVal',S_jog);
+  s('ajusteVal',S_ajuste>=0?'+'+S_ajuste:S_ajuste);
+  s('bpTotal',base+' PB');
+  s('bpFormula',`(3×${S_jog})+2${S_ajuste!==0?(S_ajuste>0?'+'+S_ajuste:S_ajuste):''}= ${base} PB`);
+  s('bpGasto',gasto);
+  s('bpRestante',restante);
+  const av=document.getElementById('bpAviso');
+  if(!av)return;
+  if(restante<0)av.textContent='⚠️ Encontro acima do orçamento!';
+  else if(restante===0)av.textContent='✅ Orçamento exato!';
+  else av.textContent='';
+  const temPesado=S.combate.some(c=>['Brutamonte','Horda','Líder','Solo'].includes(c.role));
+  if(!temPesado&&S.combate.length>0)av.textContent+=' | +1 PB disponível (sem ameaças pesadas)';
+}
+function chgJog(d){S_jog=Math.max(1,Math.min(8,S_jog+d));calcBP()}
+function chgAjuste(d){S_ajuste=Math.max(-3,Math.min(5,S_ajuste+d));calcBP()}
+
+function chgMedo(d){
+  S.medo=Math.max(0,Math.min(S.medoMax,S.medo+d));
+  document.getElementById('medoVal').textContent=S.medo;
+  renderMedo();
+}
+function renderMedo(){
+  document.getElementById('medoBar').innerHTML=Array.from({length:S.medoMax},(_,i)=>
+    `<div class="medo-pip${i<S.medo?' on':''}" onclick="setMedo(${i+1})"></div>`).join('');
+}
+function setMedo(v){S.medo=S.medo===v?v-1:v;document.getElementById('medoVal').textContent=S.medo;renderMedo()}
+
+// CRIATURA ROLE / PATAMAR
+function selRole(r,btn){
+  S.cRole=r;
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function selCPat(p){
+  S.cPatamar=p;
+  [1,2,3,4].forEach(i=>{const b=document.getElementById('cp'+i);if(b)b.classList.toggle('active',i===p)});
+}
+
+// FEATURES FORM
+let featureCount=0;
+function addFeatureForm(){
+  const id=featureCount++;
+  const div=document.createElement('div');
+  div.className='feature-form';
+  div.id='ff'+id;
+  div.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <span style="font-size:12px;color:var(--text3)">Habilidade ${id+1}</span>
+      <button class="remove-btn" onclick="removeFeature('ff${id}')">×</button>
+    </div>
+    <input type="text" placeholder="Nome da habilidade" id="fn${id}" style="margin-bottom:6px">
+    <textarea placeholder="Descrição da habilidade..." id="ft${id}" style="min-height:50px"></textarea>`;
+  document.getElementById('featuresForm').appendChild(div);
+}
+function removeFeature(id){const el=document.getElementById(id);if(el)el.remove()}
+
+// SALVAR CRIATURA
+function salvarCriatura(){
+  const nome=document.getElementById('c_nome').value.trim();
+  if(!nome){alert('Adicione um nome para a criatura!');return}
+  const features=[];
+  document.querySelectorAll('.feature-form').forEach((el,i)=>{
+    const n=el.querySelector('[id^="fn"]');
+    const t=el.querySelector('[id^="ft"]');
+    if(n&&t&&n.value.trim())features.push({nome:n.value.trim(),texto:t.value.trim()});
+  });
+  const c={
+    id:Date.now(),
+    nome,role:S.cRole,patamar:S.cPatamar,
+    dificuldade:parseInt(document.getElementById('c_dif').value)||10,
+    bioma:document.getElementById('c_bioma').value.trim(),
+    desc:document.getElementById('c_desc').value.trim(),
+    taticas:document.getElementById('c_taticas').value.trim(),
+    exp:document.getElementById('c_exp').value.trim(),
+    ataque:{nome:document.getElementById('c_atkNome').value||'Ataque',alcance:document.getElementById('c_atkAlcance').value,dano:document.getElementById('c_atkDano').value||'1d6',mod:parseInt(document.getElementById('c_atkMod').value)||0},
+    limiares:{maior:parseInt(document.getElementById('c_limMaior').value)||5,grave:parseInt(document.getElementById('c_limGrave').value)||10},
+    hp:parseInt(document.getElementById('c_hp').value)||5,
+    stress:parseInt(document.getElementById('c_stress').value)||2,
+    features,
+    hpAtual:parseInt(document.getElementById('c_hp').value)||5,
+    stressAtual:0
+  };
+  S.criaturas.push(c);
+  renderCriaturas();
+  // reset form
+  ['c_nome','c_bioma','c_desc','c_taticas','c_exp','c_atkNome','c_atkDano'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('c_dif').value=10;
+  document.getElementById('c_atkMod').value=0;
+  document.getElementById('c_limMaior').value=5;
+  document.getElementById('c_limGrave').value=10;
+  document.getElementById('c_hp').value=5;
+  document.getElementById('c_stress').value=2;
+  document.getElementById('featuresForm').innerHTML='';
+  featureCount=0;
+  showInner('criaturas',document.querySelectorAll('.inner-tab')[1]);
+}
+
+// RENDER CRIATURAS
+function filtrarCriaturas(){
+  const q=document.getElementById('criaturaSearch').value.toLowerCase();
+  renderCriaturas(q);
+}
+function roleClass(r){
+  const m={Standard:'role-standard',Bruiser:'role-bruiser',Leader:'role-leader',Minion:'role-minion',Solo:'role-solo'};
+  return m[r]||'role-standard';
+}
+function renderCriaturas(q=''){
+  const list=S.criaturas.filter(c=>!q||c.nome.toLowerCase().includes(q)||c.bioma.toLowerCase().includes(q)||c.role.toLowerCase().includes(q));
+  const el=document.getElementById('criaturasList');
+  if(!list.length){el.innerHTML='<div class="card" style="text-align:center;color:var(--text2)">Nenhuma criatura criada ainda.<br>Use a aba ➕ Criar para começar.</div>';return}
+  el.innerHTML=list.map(c=>`
+    <div class="criatura-card">
+      <div class="criatura-header">
+        <div>
+          <div class="criatura-nome">${c.nome}</div>
+          ${c.bioma?`<div style="font-size:12px;color:var(--text3);margin-top:2px">📍 ${c.bioma}</div>`:''}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <span class="criatura-role ${roleClass(c.role)}">${c.role}</span>
+          <span style="font-size:11px;color:var(--text3)">P${c.patamar}</span>
+        </div>
+      </div>
+      ${c.desc?`<div class="criatura-desc">${c.desc}</div>`:''}
+      <div class="criatura-stats">
+        <div class="criatura-stat">Dif <b>${c.dificuldade}</b></div>
+        <div class="criatura-stat">PV <b>${c.hp}</b></div>
+        <div class="criatura-stat">Fadiga <b>${c.stress}</b></div>
+        ${c.taticas?`<div class="criatura-stat" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🎯 ${c.taticas}</div>`:''}
+      </div>
+      <div class="limiares-visual">
+        <div class="limiar-box limiar-menor"><span class="limiar-label">Menor → 1 PV</span>&lt; ${c.limiares.maior}</div>
+        <div class="limiar-box limiar-maior"><span class="limiar-label">Maior → 2 PV</span>≥ ${c.limiares.maior}</div>
+        <div class="limiar-box limiar-grave"><span class="limiar-label">Grave → 3 PV</span>≥ ${c.limiares.grave}</div>
+      </div>
+      <div class="ataque-row">
+        <div class="ataque-nome">⚔️ ${c.ataque.nome}</div>
+        <div class="ataque-info">${c.ataque.alcance} | ${c.ataque.dano} | Mod: ${c.ataque.mod>=0?'+':''}${c.ataque.mod}</div>
+      </div>
+      ${c.features.map(f=>`<div class="feature-item"><div class="feature-nome">${f.nome}</div>${f.texto}</div>`).join('')}
+      ${c.exp?`<div style="font-size:12px;color:var(--text2);margin-top:6px">✦ Experiências: ${c.exp}</div>`:''}
+        <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="btn btn-primary" style="font-size:13px;padding:8px" onclick="addCombate(${c.id})">⚡ Adicionar à sessão</button>
+        <button class="btn btn-danger" style="font-size:13px;padding:8px;flex:0" onclick="removeCriatura(${c.id})">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function removeCriatura(id){S.criaturas=S.criaturas.filter(c=>c.id!==id);renderCriaturas()}
+
+// COMBATE
+function addCombate(id){
+  const c=S.criaturas.find(x=>x.id===id);
+  if(!c)return;
+  const inst={...c,instId:Date.now(),hpAtual:c.hp,stressAtual:0};
+  S.combate.push(inst);
+  renderCombate();
+  calcBP();
+  showInner('sessao',document.querySelectorAll('.inner-tab')[0]);
+}
+function renderCombate(){
+  const el=document.getElementById('combatList');
+  if(!S.combate.length){el.innerHTML='';return}
+  el.innerHTML=S.combate.map(c=>`
+    <div class="criatura-card" style="margin-bottom:10px">
+      <div class="criatura-header">
+        <div><div class="criatura-nome" style="font-size:14px">${c.nome}</div></div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="criatura-role ${roleClass(c.role)}" style="font-size:10px">${c.role}</span>
+          <button class="remove-btn" onclick="removeCombate(${c.instId})" style="font-size:14px">×</button>
+        </div>
+      </div>
+      <div class="limiares-visual" style="margin-bottom:8px">
+        <div class="limiar-box limiar-menor" style="font-size:10px"><span class="limiar-label">Menor</span>&lt;${c.limiares.maior}</div>
+        <div class="limiar-box limiar-maior" style="font-size:10px"><span class="limiar-label">Maior</span>≥${c.limiares.maior}</div>
+        <div class="limiar-box limiar-grave" style="font-size:10px"><span class="limiar-label">Grave</span>≥${c.limiares.grave}</div>
+      </div>
+      <div class="tracker-inline">
+        <span class="tracker-label-sm" style="color:var(--green)">HP ${c.hpAtual}/${c.hp}</span>
+        <div class="hp-pips-c">${Array.from({length:c.hp},(_,i)=>`<div class="hp-pip-c${i<c.hpAtual?' on-hp':''}" onclick="setCombateHP(${c.instId},${i+1})"></div>`).join('')}</div>
+        <button class="step-btn" style="width:24px;height:24px;font-size:14px" onclick="chgCombate(${c.instId},'hp',-1)">−</button>
+        <button class="step-btn" style="width:24px;height:24px;font-size:14px" onclick="chgCombate(${c.instId},'hp',1)">+</button>
+      </div>
+      <div class="tracker-inline">
+        <span class="tracker-label-sm" style="color:var(--red)">Fadiga ${c.stressAtual}/${c.stress}</span>
+        <div class="hp-pips-c">${Array.from({length:c.stress},(_,i)=>`<div class="hp-pip-c${i<c.stressAtual?' on-stress':''}" onclick="setCombateStress(${c.instId},${i+1})"></div>`).join('')}</div>
+        <button class="step-btn" style="width:24px;height:24px;font-size:14px" onclick="chgCombate(${c.instId},'stress',-1)">−</button>
+        <button class="step-btn" style="width:24px;height:24px;font-size:14px" onclick="chgCombate(${c.instId},'stress',1)">+</button>
+      </div>
+    </div>`).join('');
+}
+function chgCombate(instId,tipo,d){
+  const c=S.combate.find(x=>x.instId===instId);if(!c)return;
+  if(tipo==='hp')c.hpAtual=Math.max(0,Math.min(c.hp,c.hpAtual+d));
+  else c.stressAtual=Math.max(0,Math.min(c.stress,c.stressAtual+d));
+  renderCombate();
+}
+function setCombateHP(instId,v){const c=S.combate.find(x=>x.instId===instId);if(!c)return;c.hpAtual=c.hpAtual===v?v-1:v;renderCombate()}
+function setCombateStress(instId,v){const c=S.combate.find(x=>x.instId===instId);if(!c)return;c.stressAtual=c.stressAtual===v?v-1:v;renderCombate()}
+function removeCombate(instId){S.combate=S.combate.filter(x=>x.instId!==instId);renderCombate();calcBP()}
+
+// ── SAVE / LOAD ────────────────────────────────────────────────────────────
+function salvarTudo(){
+  try{
+    localStorage.setItem('dh_criaturas',JSON.stringify(S.criaturas));
+    localStorage.setItem('dh_ficha',JSON.stringify({
+      nome:document.getElementById('charName').value,
+      classe:document.getElementById('charClasse').value,
+      heranca:document.getElementById('charHeranca').value,
+      patamar:S.patamar,
+      evasao:document.getElementById('evasao').value,
+      prof:document.getElementById('proficiencia').value,
+      attrs:S.attrs,
+      exp1:document.getElementById('exp1').value,
+      exp2:document.getElementById('exp2').value,
+      arma1nome:document.getElementById('arma1nome').value,
+      arma1atrib:document.getElementById('arma1atrib').value,
+      arma1dano:document.getElementById('arma1dano').value,
+      arma1hab:document.getElementById('arma1hab').value,
+      arma2nome:document.getElementById('arma2nome').value,
+      arma2atrib:document.getElementById('arma2atrib').value,
+      arma2dano:document.getElementById('arma2dano').value,
+      arma2hab:document.getElementById('arma2hab').value,
+      armaduranome:document.getElementById('armaduranome').value,
+      armaduralim:document.getElementById('armaduralim').value,
+      armadurabase:document.getElementById('armadurabase').value,
+      armadurahab:document.getElementById('armadurahab').value,
+      habilidades:document.getElementById('habilidades').value,
+      inventario:document.getElementById('inventario').value,
+      notas:document.getElementById('notas').value,
+      notasSessao:document.getElementById('notasSessao').value,
+      coins:S.coins,
+      hp:S.hp,hpMax:S.hpMax,hope:S.hope,stress:S.stress,stressMax:S.stressMax,
+      armor:S.armor,armorMax:S.armorMax,medo:S.medo,
+      limiares:S.limiares
+    }));
+  }catch(e){}
+}
+
+function carregarTudo(){
+  try{
+    const c=localStorage.getItem('dh_criaturas');
+    if(c)S.criaturas=JSON.parse(c);
+    const f=localStorage.getItem('dh_ficha');
+    if(f){
+      const d=JSON.parse(f);
+      const set=(id,v)=>{const e=document.getElementById(id);if(e&&v!==undefined)e.value=v};
+      set('charName',d.nome);set('charClasse',d.classe);set('charHeranca',d.heranca);
+      set('evasao',d.evasao);set('proficiencia',d.prof);
+      set('exp1',d.exp1);set('exp2',d.exp2);
+      set('arma1nome',d.arma1nome);set('arma1atrib',d.arma1atrib);set('arma1dano',d.arma1dano);set('arma1hab',d.arma1hab);
+      set('arma2nome',d.arma2nome);set('arma2atrib',d.arma2atrib);set('arma2dano',d.arma2dano);set('arma2hab',d.arma2hab);
+      set('armaduranome',d.armaduranome);set('armaduralim',d.armaduralim);set('armadurabase',d.armadurabase);set('armadurahab',d.armadurahab);
+      set('habilidades',d.habilidades);set('inventario',d.inventario);set('notas',d.notas);set('notasSessao',d.notasSessao);
+      if(d.patamar)S.patamar=d.patamar;
+      if(d.attrs)Object.assign(S.attrs,d.attrs);
+      if(d.coins)Object.assign(S.coins,d.coins);
+      if(d.hp!==undefined){S.hp=d.hp;S.hpMax=d.hpMax;S.hope=d.hope;S.stress=d.stress;S.stressMax=d.stressMax;S.armor=d.armor;S.armorMax=d.armorMax;}
+      if(d.medo!==undefined)S.medo=d.medo;
+      if(d.limiares)Object.assign(S.limiares,d.limiares);
+      ['ouro','prata','cobre'].forEach(k=>{const e=document.getElementById(k);if(e)e.textContent=S.coins[k]||0});
+      updateAv();
+    }
+  }catch(e){}
+}
+
+// Salva automaticamente a cada 3 segundos
+setInterval(salvarTudo,3000);
+// Salva ao fechar/sair da página
+window.addEventListener('beforeunload',salvarTudo);
+
+// INIT
+carregarTudo();
+renderPatamar();renderAttrs();refreshStatus();renderModBtns();renderAttrBtns();renderCartas();renderMedo();renderCriaturas();calcBP();
+</script>
+</body>
+</html>
